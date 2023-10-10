@@ -11,7 +11,7 @@ namespace Client
         {
             // Skapa en klient och anslut till servern
             TcpClient client = new TcpClient();
-            int port = 1024;
+            int port = 11000;
             string serverIp = "127.0.0.1";
 
             client.Connect(serverIp, port);

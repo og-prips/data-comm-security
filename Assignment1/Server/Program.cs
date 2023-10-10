@@ -11,7 +11,7 @@ namespace Server
         static void Main(string[] args)
         {
             // Skapa en lyssnare som lyssnar på alla adresser på det lokala nätverket
-            int port = 1024;
+            int port = 11000;
             TcpListener listener = new TcpListener(IPAddress.Any, port);
             listener.Start();
 
