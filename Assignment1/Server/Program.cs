@@ -1,6 +1,8 @@
-﻿using System.Net;
+﻿using Assignment1.Common.DTOs;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 
 namespace Server
 {
@@ -8,7 +10,8 @@ namespace Server
     {
         static void Main(string[] args)
         {
-            int port = 1024;
+            // Skapa en lyssnare som lyssnar på alla adresser på det lokala nätverket
+            int port = 11000;
             TcpListener listener = new TcpListener(IPAddress.Any, port);
             listener.Start();
 
@@ -19,32 +22,45 @@ namespace Server
             Console.WriteLine("Client connected.");
 
             // Skapa en tråd för att hantera kommunikation med klienten
-            Thread clientThread = new Thread(HandleClient);
+            Thread clientThread = new Thread(start: HandleClient!);
             clientThread.Start(client);
-
-            Console.ReadLine();
         }
 
         // Metod för att hantera kommunikation med klienten
         static void HandleClient(object clientObj)
         {
+            // Hämta klienten och klientens ström
             TcpClient client = (TcpClient)clientObj;
-
-            // Hämta klientens ström
             NetworkStream stream = client.GetStream();
 
-            // Läs data från klienten
-            byte[] buffer = new byte[1024];
-            int bytesRead = stream.Read(buffer, 0, buffer.Length);
-            string clientData = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-            Console.WriteLine("Client sent: " + clientData);
+            // Loopar och lyssnar/svarar på klienten till dess att anslutningen upphör
+            try
+            {
+                while (true)
+                {
+                    // Läs data från klienten
+                    byte[] buffer = new byte[1024];
+                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                    string clientData = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-            // Skicka svar till klienten
-            string response = "Hello from the server!";
-            byte[] responseData = Encoding.ASCII.GetBytes(response);
-            stream.Write(responseData, 0, responseData.Length);
+                    // Deserialisera mottaget meddelande
+                    Message? receivedMessage = JsonSerializer.Deserialize<Message>(clientData);
 
-            // Stäng anslutningen till klienten
+                    Console.WriteLine($"{receivedMessage!.DateSent} - Message recieved from client: {receivedMessage.Text}");
+
+                    // Skicka svar till klienten
+                    Message responseMessage = new("Hello from the server!", DateTime.Now);
+
+                    string jsonResponseMessage = JsonSerializer.Serialize(responseMessage);
+                    byte[] messageBytes = Encoding.UTF8.GetBytes(jsonResponseMessage);
+                    stream.Write(messageBytes, 0, messageBytes.Length);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine("Shutting down...");
+            }
         }
     }
 }
