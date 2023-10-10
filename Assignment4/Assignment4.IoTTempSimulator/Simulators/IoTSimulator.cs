@@ -7,9 +7,26 @@ namespace Assignment4.IoTTempSimulator.Simulators
     {
         private readonly TemperatureDataManager _temperatureDataManager;
 
-        public IoTSimulator(TemperatureDataManager signalRManager)
+        private string _deviceId;
+        private double _minTemp;
+        private double _maxTemp;
+        private int _minHumidity;
+        private int _maxHumidity;
+
+        public IoTSimulator(
+            TemperatureDataManager signalRManager,
+            string deviceId,
+            double minTemp,
+            double maxTemp,
+            int minHumidity,
+            int maxHumidity)
         {
             _temperatureDataManager = signalRManager;
+            this._deviceId = deviceId;
+            this._minTemp = minTemp;
+            this._maxTemp = maxTemp;
+            this._minHumidity = minHumidity;
+            this._maxHumidity = maxHumidity;
         }
 
         public async Task StartSimulationAsync()
@@ -18,19 +35,26 @@ namespace Assignment4.IoTTempSimulator.Simulators
 
             while (true)
             {
-                double minValue = -10.0;
-                double maxValue = 30.0;
-                double temperature = minValue + (new Random().NextDouble() * (maxValue - minValue));
+                var temperatureData = GetRandomTemperatureData();
+                Console.WriteLine($"Sending temperature: {temperatureData.Temperature}°C");
 
-                var temperatureData = new TemperatureData { Temperature = temperature };
-                Console.WriteLine($"Sending temperature: {temperature}°C");
-
-                // Send the temperature value to the server via SignalR
                 await _temperatureDataManager.SendTemperatureAsync(temperatureData);
-
-                // Wait for 5 seconds before the next simulation
                 await Task.Delay(5000);
             }
+        }
+
+        private TemperatureData GetRandomTemperatureData()
+        {
+            double temperature = _minTemp + (new Random().NextDouble() * (_maxTemp - _minTemp));
+            int humidity = new Random().Next(_minHumidity, _maxHumidity);
+
+            return new TemperatureData
+            {
+                DeviceId = _deviceId,
+                Temperature = temperature,
+                Humidity = humidity,
+                DateSent = DateTime.Now
+            };
         }
     }
 }
