@@ -44,6 +44,7 @@ namespace Client
                     Console.Write("Send a message to the server: ");
                     string messageText = Console.ReadLine()!;
 
+                    // Avvik från tom input
                     if (string.IsNullOrWhiteSpace(messageText)) continue;
 
                     Message message = new(messageText, DateTime.Now);

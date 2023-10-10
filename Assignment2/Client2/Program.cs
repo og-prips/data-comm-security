@@ -14,10 +14,14 @@ namespace Client2
             int remoteHostPort = 11000;
             string remoteHostName = "127.0.0.1";
 
+            // Klient för att skicka meddelanden
             UdpClient udpClient = new UdpClient();
+
+            // IPEndPoint som lyssnaren använder för att ta emot meddelanden från alla IP-adresser på angiven port
             IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, listenPort);
 
-            // Start a background thread to continuously receive messages
+            // En tråd som kontinuerligt tar emot meddelanden
+            // Tråden fångar upp ett eventuellt Socket-fel och stänger isåfall ner klienten
             var receiveThread = new Thread(() =>
             {
                 UdpClient listener = new UdpClient(listenPort);
@@ -41,11 +45,12 @@ namespace Client2
                     listener.Close();
                 }
             });
+            // Startar tråden
             receiveThread.Start();
 
             Console.WriteLine($"Client is running, messages are now being sent to {remoteHostName}");
 
-            // Start a loop to send messages
+            // Startar en loop för att ta emot användarens input och skickar som ett serialiserat meddelande till mottagande part
             while (true)
             {
                 string input = Console.ReadLine()!;
@@ -55,7 +60,7 @@ namespace Client2
 
                 byte[] sendBytes = Encoding.UTF8.GetBytes(jsonMessage);
 
-                udpClient.Send(sendBytes, sendBytes.Length, remoteHostName, remoteHostPort); // Send to Client1
+                udpClient.Send(sendBytes, sendBytes.Length, remoteHostName, remoteHostPort); // Skickar till Client1
             }
         }
     }

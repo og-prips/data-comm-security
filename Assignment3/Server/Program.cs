@@ -30,9 +30,12 @@ namespace Server
                 {
                     Console.WriteLine("Waiting for connection...");
 
+                    // Väntar på en anslutning från en klient
                     HttpListenerContext context = await listener.GetContextAsync();
+
                     if (context.Request.IsWebSocketRequest)
                     {
+                        // Om en WebSocket-anslutning begärs, acceptera den
                         WebSocketContext wsContext = await context.AcceptWebSocketAsync(null);
                         Console.WriteLine("Connected to client.");
 
@@ -41,6 +44,7 @@ namespace Server
                     }
                     else
                     {
+                        // Om begäran inte är en WebSocket-anslutning, returnera ett felmeddelande
                         context.Response.StatusCode = 400;
                         context.Response.Close();
                     }
@@ -52,6 +56,7 @@ namespace Server
             }
             finally
             {
+                // Stäng lyssnaren när programmet är klart
                 listener.Close();
             }
         }
@@ -64,16 +69,18 @@ namespace Server
             {
                 try
                 {
+                    // Försök ta emot meddelanden från klienten
                     WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+
                     if (result.MessageType == WebSocketMessageType.Text)
                     {
                         // Ta emot svar från klienten
                         string recievedJsonMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
                         Message? recievedMessage = JsonSerializer.Deserialize<Message>(recievedJsonMessage);
 
-                        Console.WriteLine($"{recievedMessage.DateSent} - Message from client: {recievedMessage!.Text}");
+                        Console.WriteLine($"{recievedMessage!.DateSent} - Message from client: {recievedMessage.Text}");
 
-                        // Skicka svar till klienten
+                        // Skapa och skicka ett svar till klienten
                         Message responseMessage = new("Message recieved.", DateTime.Now);
                         string jsonResponse = JsonSerializer.Serialize(responseMessage);
                         byte[] responseBytes = Encoding.UTF8.GetBytes(jsonResponse);
@@ -83,6 +90,7 @@ namespace Server
                 }
                 catch (Exception ex)
                 {
+                    // Om det uppstår ett fel, skriv ut felmeddelandet och avsluta hanteringen av klienten
                     Console.WriteLine($"Client connection closed: {ex.Message}");
                     break; // Stoppa loopen när klientens anslutning stängs
                 }
