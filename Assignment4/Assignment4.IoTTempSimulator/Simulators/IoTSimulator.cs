@@ -5,32 +5,83 @@ namespace Assignment4.IoTTempSimulator.Simulators
 {
     internal class IoTSimulator
     {
+        private readonly AuthService _authService;
         private readonly TemperatureDataManager _temperatureDataManager;
 
-        public IoTSimulator(TemperatureDataManager signalRManager)
+        private string _deviceId;
+        private string _identityName;
+        private double _minTemp;
+        private double _maxTemp;
+        private int _minHumidity;
+        private int _maxHumidity;
+
+        public IoTSimulator(
+            AuthService authService,
+            TemperatureDataManager temperatureDataManager,
+            string deviceId,
+            string identityName,
+            double minTemp,
+            double maxTemp,
+            int minHumidity,
+            int maxHumidity)
         {
-            _temperatureDataManager = signalRManager;
+            _authService = authService;
+            _temperatureDataManager = temperatureDataManager;
+            _deviceId = deviceId;
+            _identityName = identityName;
+            _minTemp = minTemp;
+            _maxTemp = maxTemp;
+            _minHumidity = minHumidity;
+            _maxHumidity = maxHumidity;
         }
 
+        /// <summary>
+        /// En metod för att kontinuerligt skicka temperatur-data till API:et.
+        /// Först hämtas en JWT och om den är giltig körs själva loopen som skickar datat var 5e sekund.
+        /// </summary>
+        /// <returns></returns>
         public async Task StartSimulationAsync()
         {
-            Console.WriteLine("Temperature Sensor Simulator is running. Press Ctrl+C to exit.");
+            await Console.Out.WriteLineAsync($"Temperature Sensor Simulator '{_deviceId}' is running. Press Ctrl+C to exit.");
+
+            await Console.Out.WriteLineAsync($"{_deviceId}: Attempting to authorize as '{_identityName}'\n");
+
+            string authToken = await _authService.Login(_identityName);
+
+            if (string.IsNullOrEmpty(authToken))
+            {
+                await Console.Out.WriteLineAsync($"{_deviceId}: Failed to authenticate with identity '{_identityName}'");
+                return;
+            }
+
+            await Console.Out.WriteLineAsync($"{_deviceId} Authorized.\n");
 
             while (true)
             {
-                double minValue = -10.0;
-                double maxValue = 30.0;
-                double temperature = minValue + (new Random().NextDouble() * (maxValue - minValue));
+                var temperatureData = GetRandomTemperatureData();
+                await Console.Out.WriteLineAsync($"{_deviceId}: Sending temperature: {temperatureData.Temperature}°C\n");
 
-                var temperatureData = new TemperatureData { Temperature = temperature };
-                Console.WriteLine($"Sending temperature: {temperature}°C");
-
-                // Send the temperature value to the server via SignalR
-                await _temperatureDataManager.SendTemperatureAsync(temperatureData);
-
-                // Wait for 5 seconds before the next simulation
+                await _temperatureDataManager.SendTemperatureDataAsync(temperatureData, authToken);
                 await Task.Delay(5000);
             }
+        }
+
+        /// <summary>
+        /// Metod för att hämta slumpat väderdata baserat på vad som angetts i konstruktorn.
+        /// </summary>
+        /// <returns></returns>
+        private TemperatureData GetRandomTemperatureData()
+        {
+            double temperature = _minTemp + (new Random().NextDouble() * (_maxTemp - _minTemp));
+            int humidity = new Random().Next(_minHumidity, _maxHumidity);
+
+            return new TemperatureData
+            {
+                DeviceId = _deviceId,
+                Temperature = temperature,
+                Humidity = humidity,
+                DateSent = DateTime.Now
+            };
         }
     }
 }

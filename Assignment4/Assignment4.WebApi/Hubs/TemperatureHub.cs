@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Assignment4.WebApi.Hubs
 {
+    // Hubben som används för att skicka meddelandet från controllern, för att ansluta till hubben kräv att man är auktoriserad med rollen "user"
+    [Authorize(Roles = "user")]
     public class TemperatureHub : Hub
     {
-        public async Task SendTemperature(int temperature)
-        {
-            await Clients.All.SendAsync("ReceiveTemperature", temperature);
-        }
     }
 }

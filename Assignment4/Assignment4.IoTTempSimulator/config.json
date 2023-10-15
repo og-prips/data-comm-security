@@ -1,0 +1,7 @@
+{
+  "ApiUrl": "https://localhost:7205/api/",
+  "AES": {
+    "Key": "RXHWMPzndn6emZ6xkWge1Av09/uaCOrznIPlcrF5gxQ=",
+    "IV": "NdEvo4Fn2psiXXl9gaAsCw=="
+  }
+}
