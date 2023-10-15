@@ -2,13 +2,21 @@ html {
   font-size: 14px;
 }
 
+body {
+  background-color: #121212;
+}
+
 @media (min-width: 768px) {
   html {
     font-size: 16px;
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
@@ -19,4 +27,52 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+
+#dashboardContainer h1 {
+  text-align: center;
+  color: antiquewhite;
+}
+
+.temperatureLog {
+  background-color: whitesmoke;
+  border: 1px solid gray;
+  display: none;
+}
+
+.iot-container {
+  background-color: whitesmoke;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iot-content-box {
+  background-color: #ccc;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  width: 500px;
+  height: 200px;
+  margin: 40px;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.main-text {
+  color: antiquewhite;
+}
+
+.main-text hr {
+  border: 0;
+  height: 2px;
+  background-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0.75),
+    rgba(0, 0, 0, 0)
+  );
+}
+
+.showLog {
+  cursor: pointer;
 }

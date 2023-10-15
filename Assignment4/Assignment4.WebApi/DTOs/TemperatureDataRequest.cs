@@ -5,7 +5,7 @@ namespace Assignment4.WebApi.DTOs
     public class TemperatureDataRequest
     {
         [Required]
-        [MinLength(1), MaxLength(20)]
+        [MinLength(2), MaxLength(20)]
         public string DeviceId { get; set; } = null!;
 
         [Required]

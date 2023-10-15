@@ -15,12 +15,19 @@ namespace Assignment4.WebApi.Services
             _aesIV = Convert.FromBase64String(_config["AES:IV"]!);
         }
 
+        /// <summary>
+        /// Tar emot en byte array som med hjälps av Aes dekrypteras och returneras i form av en sträng
+        /// Aes.IV och Aes.Key finns hårdkodade som Base64Strings och hämtas från appsettings.json. IV och Key är samma som i IoTSimulatorn
+        /// </summary>
+        /// <param name="cipherText"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public string DecryptStringFromBytes_Aes(byte[] cipherText)
         {
             if (cipherText == null || cipherText.Length <= 0)
                 throw new ArgumentNullException("cipherText");
 
-            string plaintext = null;
+            string plaintext = null!;
 
             using (Aes aesAlg = Aes.Create())
             {
@@ -35,7 +42,6 @@ namespace Assignment4.WebApi.Services
                     {
                         using (StreamReader srDecrypt = new StreamReader(csDecrypt))
                         {
-
                             plaintext = srDecrypt.ReadToEnd();
                         }
                     }

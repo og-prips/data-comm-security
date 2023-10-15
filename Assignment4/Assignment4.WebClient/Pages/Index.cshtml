@@ -4,17 +4,21 @@
     ViewData["Title"] = "Temperature Dashboard";
 }
 
-<div class="text-center">
+<div class="text-center main-text">
     <h1 class="display-4">Temperature Dashboard</h1>
+    <hr />
 </div>
 
-<div class="container">
-    <div class="row p-1">
-        <div class="col-6">
-            <ul id="temperatureList"></ul>
-        </div>
+<div class="container" id="dashboardContainer">
+    <h1 id="statusText">Loading...</h1>
+    <div class="d-flex justify-content-center align-items-center">
+        <button class="btn btn-primary mx-2" id="loginBtn">Login</button>
+        <button class="btn btn-danger mx-2" id="logoutBtn">Logout</button>
+    </div>
+    <div class="iot-container my-5">
     </div>
 </div>
 
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/auth.js"></script>
 <script src="~/js/temperature.js"></script>

@@ -16,6 +16,13 @@ namespace Assignment4.IoTTempSimulator.Services
             _aesIV = Convert.FromBase64String(_config["AES:IV"]!);
         }
 
+        /// <summary>
+        /// Tar emot en sträng och gör om denna till en krypterad byte array med hjälp utav Aes.
+        /// Aes.IV och Aes.Key finns hårdkodade som Base64Strings och hämtas från config.json. IV och Key är samma som i API:et
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public byte[] EncryptStringToBytes_Aes(string s)
         {
             if (s == null || s.Length <= 0)

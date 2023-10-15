@@ -1,26 +1,31 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddSignalR();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+// CSP för att begränsa källor för webbinnehåll, tillåter anslutning i form av HTTPS och WSS från APIet
+app.Use(async (context, next) =>
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+    string csp =
+        "default-src 'self'; " +
+        "connect-src 'self' https://localhost:7205 wss://localhost:7205 wss://localhost:44304/Assignment4.WebClient/; " +
+        "script-src 'self'; " +
+        "style-src 'self'; " +
+        "font-src 'self'; " +
+        "img-src 'self'; " +
+        "frame-src 'self'";
+
+    // Lägg till CSP-headers i HTTP-svaret.
+    context.Response.Headers.Add("Content-Security-Policy", csp);
+
+    await next();
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthorization();
-
 app.MapRazorPages();
 
 app.Run();
