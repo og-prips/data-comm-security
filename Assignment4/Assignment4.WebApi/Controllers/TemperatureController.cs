@@ -23,7 +23,7 @@ namespace Assignment4.WebApi.Controllers
         }
 
         /// <summary>
-        /// En endpoint för att ta emot väderdata, körs bara om anroppet är auktoriserat och har rollen "sensor".
+        /// En endpoint för att ta emot väderdata, körs bara om anroppet är auktoriserat och har policyn "WritePermission".
         /// Datan tas emot och dekrypteras för att sedan deserialiseras till en TemperatureDataRequest.
         /// Sedan valideras requesten och om den är godkänd skickas den ut till alla clienter i hubben och anroparen får tillbaka ett Ok, 
         /// annars en BadRequest med ModelState som säger var felet ligger i modellen.
