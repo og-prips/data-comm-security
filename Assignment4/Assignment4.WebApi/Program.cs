@@ -52,6 +52,15 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("WritePermission", policy =>
+        policy.RequireRole("sensor"));
+
+    options.AddPolicy("ReadPermission", policy =>
+        policy.RequireRole("user"));
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

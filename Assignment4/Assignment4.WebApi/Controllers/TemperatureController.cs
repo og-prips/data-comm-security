@@ -30,7 +30,7 @@ namespace Assignment4.WebApi.Controllers
         /// </summary>
         /// <param name="encryptedBase64TemperatureData"></param>
         /// <returns></returns>
-        [Authorize(Roles = "sensor")]
+        [Authorize(Policy = "WritePermission")]
         [HttpPost]
         public async Task<IActionResult> SendTemperatureDataAsync([FromBody] string encryptedBase64TemperatureData)
         {
