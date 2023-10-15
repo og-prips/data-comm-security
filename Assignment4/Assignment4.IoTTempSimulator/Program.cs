@@ -11,7 +11,7 @@ IConfiguration config = builder.Build();
 
 var authService = new AuthService();
 var encryptionService = new EncryptionService(config);
-var temperatureDataManager = new TemperatureDataManager(config, authService, encryptionService);
+var temperatureDataManager = new TemperatureDataManager(config, encryptionService);
 
 // Här sätts 3 olika instanser av IoTSimulator upp med lite olika värden, alla tre kommer att lyckas bli auktoriserade men endast 1 och 2 är autentiserade att skicka data.
 #region Simulators Setup

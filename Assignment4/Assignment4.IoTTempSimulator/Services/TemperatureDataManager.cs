@@ -1,6 +1,5 @@
 ﻿using Assignment4.IoTTempSimulator.Models;
 using Microsoft.Extensions.Configuration;
-using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace Assignment4.IoTTempSimulator.Services
@@ -8,17 +7,13 @@ namespace Assignment4.IoTTempSimulator.Services
     internal class TemperatureDataManager
     {
         private readonly IConfiguration _config;
-        private readonly AuthService _authService;
         private readonly EncryptionService _encryptionService;
-        private readonly HttpClient _httpClient;
         private readonly string _apiUrl;
 
-        public TemperatureDataManager(IConfiguration config, AuthService authService, EncryptionService encryptionService)
+        public TemperatureDataManager(IConfiguration config, EncryptionService encryptionService)
         {
             _config = config;
-            _authService = authService;
             _encryptionService = encryptionService;
-            _httpClient = new HttpClient();
             _apiUrl = _config.GetValue<string>("ApiUrl")! + "temperature";
         }
 
@@ -29,16 +24,14 @@ namespace Assignment4.IoTTempSimulator.Services
         /// <param name="temperatureData"></param>
         /// <param name="authToken"></param>
         /// <returns></returns>
-        public async Task SendTemperatureDataAsync(TemperatureData temperatureData, string authToken)
+        public async Task SendTemperatureDataAsync(TemperatureData temperatureData, HttpClient httpClient)
         {
             try
             {
                 string encryptedTemperatureData = EncryptTemperatureData(temperatureData);
                 var content = new StringContent(JsonSerializer.Serialize(encryptedTemperatureData), System.Text.Encoding.UTF8, "application/json");
 
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
-
-                var response = await _httpClient.PostAsync(_apiUrl, content);
+                var response = await httpClient.PostAsync(_apiUrl, content);
 
                 if (response.IsSuccessStatusCode)
                 {

@@ -1,5 +1,6 @@
 ﻿using Assignment4.IoTTempSimulator.Models;
 using Assignment4.IoTTempSimulator.Services;
+using System.Net.Http.Headers;
 
 namespace Assignment4.IoTTempSimulator.Simulators
 {
@@ -47,6 +48,8 @@ namespace Assignment4.IoTTempSimulator.Simulators
             await Console.Out.WriteLineAsync($"{_deviceId}: Attempting to authorize as '{_identityName}'\n");
 
             string authToken = await _authService.Login(_identityName);
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
 
             if (string.IsNullOrEmpty(authToken))
             {
@@ -61,7 +64,7 @@ namespace Assignment4.IoTTempSimulator.Simulators
                 var temperatureData = GetRandomTemperatureData();
                 await Console.Out.WriteLineAsync($"{_deviceId}: Sending temperature: {temperatureData.Temperature}°C\n");
 
-                await _temperatureDataManager.SendTemperatureDataAsync(temperatureData, authToken);
+                await _temperatureDataManager.SendTemperatureDataAsync(temperatureData, httpClient);
                 await Task.Delay(5000);
             }
         }
